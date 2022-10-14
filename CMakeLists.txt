@@ -3,4 +3,5 @@ project(data_structure C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(initial initial.c)
+add_executable(Lab03a Lab03a.c)
+add_executable(Lab03b Lab03b.c)
