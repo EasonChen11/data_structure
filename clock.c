@@ -11,7 +11,7 @@
 #define MAX 10
 #define SIZE 64000
 
-void SeqSearch(int [], int, int);
+void search(int [], int, int);
 
 int main(void)
 {
@@ -43,7 +43,7 @@ int main(void)
 		//for (int j=0; j<MAX*1000; ++j)
 			search (data, key, 1000*i);
 ****/
-        SeqSearch (data, key, 1000*i);
+        search (data, key, 1000*i);
 
         elapsed_time = clock() - start_time;
 
@@ -67,7 +67,7 @@ int main(void)
 
 }
 
-void SeqSearch(int data [], int key, int limit)
+void search(int data [], int key, int limit)
 {
     int i=0;
     while (i<limit && data[i] != key)

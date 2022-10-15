@@ -9,7 +9,7 @@
 #define MAX 10
 #define SIZE 10000
 int cmp(const void *a, const void *b);
-void readfile(int [],int []);
+void readfile(int []);
 void Sequential_search_workspace(int [], struct timespec, struct timespec);
 void Sequential_search  (int [], int, int);
 void Sentinel_search_workspace(int [],struct timespec,struct timespec);
@@ -21,11 +21,12 @@ int Binary_search_loop(int [], int,int,int);
 
 int main(void)
 {
-    int data[SIZE+1],sorting_data[SIZE];
+    int data[SIZE+1];
     data[SIZE]=-1;
     struct timespec tt1, tt2;
-    readfile(data,sorting_data);
+    readfile(data);
     //close file
+    qsort(data,SIZE+1, sizeof(int),cmp);
     srand(time(0));
     // Sequential searching for a fixed key which is not in list
     printf("Sequential searching:\n");
@@ -36,13 +37,13 @@ int main(void)
     Sentinel_search_workspace(data,tt1,tt2);
     putchar('\n');
     //sorting list
-    qsort(sorting_data,SIZE+1, sizeof(int),cmp);
     // Binary search using recursion for a fixed key which is not in list
     printf("Binary search using recursion:\n");
-    Binary_search_recursion_workspace(sorting_data,tt1,tt2);
+    Binary_search_recursion_workspace(data,tt1,tt2);
     putchar('\n');
+    // Binary search using loop for a fixed key which is not in list
     printf("Binary search using loop:\n");
-    Binary_search_loop_workspace(sorting_data,tt1,tt2);
+    Binary_search_loop_workspace(data,tt1,tt2);
     putchar('\n');
 }
 
@@ -51,11 +52,10 @@ int cmp(const void *a, const void *b) {
     return (*((int*)a))-(*((int*)b));
 }
 
-void readfile(int data[], int sorting_data[]){
+void readfile(int data[]){
     FILE *ifp = fopen("random_data.txt", "r");
-    for (int i=0; i<SIZE; ++i){
+    for (int i=0; i<SIZE; ++i){//read file
         fscanf(ifp, "%d", &data[i]);
-        sorting_data[i] = data[i];
     }
     fclose(ifp);
 
@@ -65,11 +65,11 @@ void Sequential_search_workspace(int data[],struct timespec tt1,struct timespec 
     FILE *Sequential_search_time=fopen("Sequential_search_time.txt", "w");
     for (int i=1; i<=MAX; ++i){
         clock_gettime(CLOCK_REALTIME, &tt1);
-        Sequential_search (data, SIZE, 1000*i);
+        Sequential_search (data, SIZE, 1000*i);// target is not in the list
         clock_gettime(CLOCK_REALTIME, &tt2);
         printf("Size: %d; time: %ld\n",
                1000*i, tt2.tv_nsec - tt1.tv_nsec);
-        fprintf(Sequential_search_time,"%d\t%ld\n",
+        fprintf(Sequential_search_time,"%d\t%ld\n",//put data in file
                 1000*i, tt2.tv_nsec - tt1.tv_nsec);
     }
     fclose(Sequential_search_time);
@@ -77,7 +77,7 @@ void Sequential_search_workspace(int data[],struct timespec tt1,struct timespec 
 void Sequential_search(int data [], int key, int limit)
 {
     int i=0;
-    while (i<limit && data[i] != key)
+    while (i<limit && data[i] != key)//check i smaller than limit and not found
         ++i;
     if (i == limit) printf("Key %d not found\n", key);
     else printf("Key %d found at %d\n", key, i);
@@ -87,11 +87,11 @@ void Sentinel_search_workspace(int data[],struct timespec tt1,struct timespec tt
     FILE *Sentinel_search_time=fopen("Sentinel_search_time.txt", "w");
     for (int i=1; i<=MAX; ++i){
         clock_gettime(CLOCK_REALTIME, &tt1);
-        Sentinel_search(data, SIZE, 1000*i);
+        Sentinel_search(data, SIZE, 1000*i);// target is not in the list
         clock_gettime(CLOCK_REALTIME, &tt2);
         printf("Size: %d; time: %ld\n",
                1000*i, tt2.tv_nsec - tt1.tv_nsec);
-        fprintf(Sentinel_search_time,"%d\t%ld\n",
+        fprintf(Sentinel_search_time,"%d\t%ld\n",//put data in file
                 1000*i, tt2.tv_nsec - tt1.tv_nsec);
     }
     fclose(Sentinel_search_time);
@@ -99,8 +99,8 @@ void Sentinel_search_workspace(int data[],struct timespec tt1,struct timespec tt
 void Sentinel_search(int data [], int key, int limit)
 {
     int i=0;
-    int lest = data[limit];
-    while (data[i] != lest){
+    int last = data[limit];
+    while (data[i] != last){//using list last check whether is at the list end
         if (data[i] == key){
             printf("Key %d found at %d\n", key, i);
             return;
@@ -110,11 +110,11 @@ void Sentinel_search(int data [], int key, int limit)
     printf("Key %d not found\n", key);
 }
 
-void Binary_search_recursion_workspace(int sorting_data[],struct timespec tt1,struct timespec tt2){
+void Binary_search_recursion_workspace(int data[],struct timespec tt1,struct timespec tt2){
     FILE *BinarySearch_recursion_time=fopen("BinarySearch_recursion_time.txt", "w");
     for (int i=1; i<=MAX; ++i){
         clock_gettime(CLOCK_REALTIME, &tt1);
-        int ans=Binary_search_recursion(sorting_data,SIZE,0,1000*i);//search
+        int ans=Binary_search_recursion(data,SIZE,0,1000*i);// target is not in the list
         if(ans==-1){
             printf("Key %d not found\n",SIZE);
         }else{
@@ -123,30 +123,30 @@ void Binary_search_recursion_workspace(int sorting_data[],struct timespec tt1,st
         clock_gettime(CLOCK_REALTIME, &tt2);
         printf("Size: %d; time: %ld\n",
                1000*i, tt2.tv_nsec - tt1.tv_nsec);
-        fprintf(BinarySearch_recursion_time,"%d\t%ld\n",
+        fprintf(BinarySearch_recursion_time,"%d\t%ld\n",//put data in file
                 1000*i, tt2.tv_nsec - tt1.tv_nsec);
     }
     fclose(BinarySearch_recursion_time);
 }
-int Binary_search_recursion(int sorting_data[], int target,int left,int right) {
+int Binary_search_recursion(int data[], int target,int left,int right) {
     if (left>right){//not found
         return -1;
     }
     int mid = (left+right)/2;
-    if(sorting_data[mid]==target){//find
+    if(data[mid]==target){//find
         return mid+1;
-    }else if(sorting_data[mid]>target){
-        return Binary_search_recursion(sorting_data, target,left,mid-1);//target < the number in array
+    }else if(data[mid]>target){
+        return Binary_search_recursion(data, target,left,mid-1);//target < the number in array
     }else{
-        return Binary_search_recursion(sorting_data, target,mid+1,right);//target > the number in array
+        return Binary_search_recursion(data, target,mid+1,right);//target > the number in array
     }
 }
 
-void Binary_search_loop_workspace(int sorting_data[],struct timespec tt1,struct timespec tt2){
+void Binary_search_loop_workspace(int data[],struct timespec tt1,struct timespec tt2){
     FILE *BinarySearch_loop_time=fopen("BinarySearch_loop_time.txt", "w");
     for (int i=1; i<=MAX; ++i){
         clock_gettime(CLOCK_REALTIME, &tt1);
-        int ans=Binary_search_loop(sorting_data,SIZE,0,1000*i);//search
+        int ans=Binary_search_loop(data,SIZE,0,1000*i);// target is not in the list
         if(ans==-1){
             printf("Key %d not found\n",SIZE);
         }else{
@@ -155,21 +155,21 @@ void Binary_search_loop_workspace(int sorting_data[],struct timespec tt1,struct 
         clock_gettime(CLOCK_REALTIME, &tt2);
         printf("Size: %d; time: %ld\n",
                1000*i, tt2.tv_nsec - tt1.tv_nsec);
-        fprintf(BinarySearch_loop_time,"%d\t%ld\n",
+        fprintf(BinarySearch_loop_time,"%d\t%ld\n",//put data in file
                 1000*i, tt2.tv_nsec - tt1.tv_nsec);
     }
     fclose(BinarySearch_loop_time);
 }
-int Binary_search_loop(int sorting_data[], int target,int left,int right) {
+int Binary_search_loop(int data[], int target,int left,int right) {//using loop searching
     int mid;
     while (left <= right){
         mid = (left+right)/2;
-        if (sorting_data[mid] == target) {
+        if (data[mid] == target) {//find
             return mid;
-        }else if (target < sorting_data[mid]) {
-            right = mid - 1;
+        }else if (target < data[mid]) {
+            right = mid - 1;//target < the number in array
         }else
-            left = mid+1;
+            left = mid+1;//target > the number in array
     }
     return -1;
 }
