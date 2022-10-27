@@ -44,8 +44,8 @@ int main(void)
 skType * newStack(void)//create new stack
 {
 	skType * s;
-	s = malloc (sizeof(skType));
-	s->stack = malloc (sizeof(struct storage));
+	s = malloc (sizeof(skType));//create a new node to carry fist node and count
+	s->stack = malloc (sizeof(struct storage));//create data string
 	strcpy(s->stack->data, ""); // initialize
 	s->count = 0;
 	return s;
@@ -68,7 +68,7 @@ dType pop (skType * s)//we will delete data which is the least in the stack
 	return getData (s->stack, s->count);//get the data which we put it in the stack least
 }
 
-dType top (skType * s)
+dType top (skType * s)//return the least data in the stack
 {
 	return getData(s->stack, s->count-1);//return the least data in the stack
 }
@@ -78,13 +78,13 @@ void delStack(skType * s)//free the memory to the computer memory
 	free(s);
 }
 
-void setData (struct storage * s, int i, dType data)
+void setData (struct storage * s, int i, dType data)//add node and push the data in to the stack
 {
-	s->data[i] = data;//add node and push the data in to the stack
+	s->data[i] = data;
 }
 
-dType getData (struct storage * s, int i)
+dType getData (struct storage * s, int i)//get the data which the index given
 {
-	return s->data[i];//get the data which the index given
+	return s->data[i];
 }
 

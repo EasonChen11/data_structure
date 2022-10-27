@@ -10,7 +10,7 @@
 typedef char dType;
 
 struct storage {
-	dType * data;
+	dType * data;//data is a pointer not list
 };
 
 typedef struct {
@@ -60,38 +60,38 @@ int main(void)
 skType * newStack(void)
 {
 	skType * s;
-	s = malloc (sizeof(skType));
-	s->stack = malloc (sizeof(struct storage));
-	s->stack->data = malloc (sizeof(dType)*SIZE);
+	s = malloc (sizeof(skType));//create new node
+	s->stack = malloc (sizeof(struct storage));//create data first node
+	s->stack->data = malloc (sizeof(dType)*SIZE);//create data memory
 	for (int i; i<SIZE; i++)
 		s->stack->data[i] = '\0'; // initialize 
 	s->count = 0;
 	return s;
 }
 
-int push (skType * s, dType data)
+int push (skType * s, dType data)//put the data in the stack
 {
 	if (s->count >= SIZE)
 		return 0; // full
-	setData (s->stack, s->count, data);
-	s->count++;
+	setData (s->stack, s->count, data);//set data in the stack
+	s->count++;//size+1
 	return 1;
 }
 
-dType pop (skType * s)
+dType pop (skType * s)//remove data
 {
 	if (s->count == 0)
 		return 0; // empty
-	s->count--;
-	return getData (s->stack, s->count);
+	s->count--;//size-1
+	return getData (s->stack, s->count);//get data which in the least node
 }
 
-dType top (skType * s)
+dType top (skType * s)//return the top data
 {
 	return getData(s->stack, s->count-1);
 }
 
-void delStack(skType ** s)
+void delStack(skType ** s)//free the memory to the computer memory
 {
 	free((*s)->stack->data);
 	free((*s)->stack);
@@ -99,17 +99,17 @@ void delStack(skType ** s)
 	*s = NULL;
 }
 
-void setData (struct storage * s, int i, dType data)
+void setData (struct storage * s, int i, dType data)//put data in the node
 {
 	s->data[i] = data;
 }
 
-dType getData (struct storage * s, int i)
+dType getData (struct storage * s, int i)//return we give the index of data
 {
 	return s->data[i];
 }
 
-int empty(skType * s)
+int empty(skType * s)//check the stack whether the stack is empty
 {
 	if (s->count == 0) return 1;
 	else return 0;
