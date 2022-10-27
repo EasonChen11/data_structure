@@ -57,7 +57,7 @@ int main(void)
 
 }
 
-skType * newStack(void)
+skType * newStack(void)//create new stack
 {
 	skType * s;
 	s = malloc (sizeof(skType));//create new node

@@ -31,10 +31,11 @@ int main(void)
 	skType * S = newStack();
 
 	push (S, 'a'); push (S, 'b'); push (S, 'c');
-
+    //push the data into the stack
 	putchar (top (S)); putchar ('\n');
-
+    //print top of stack
 	putchar (pop (S)); putchar (pop (S)); putchar (pop (S));
+    //print top of stack and remove data
 	putchar ('\n');
 
 	delStack(S);
