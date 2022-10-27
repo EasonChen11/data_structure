@@ -39,7 +39,8 @@ int main(void)
 	putchar ('\n');
 
 	delStack(S);
-//print is "ccba" and the stack will be empty
+//print is "c
+//          cba" and the stack will be empty
 }
 
 skType * newStack(void)//create new stack
