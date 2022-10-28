@@ -78,17 +78,17 @@ int push (skType * s, dType data)//put the data in the stack
 	return 1;
 }
 
-void pop (skType * s)//remove data
+void pop (skType * s)//remove data not return value
 {
 	if (s->count == 0)
 		return; // empty
 	s->count--;//size-1
-	removenode (s);//get data which in the least node
+	removenode (s);//remove first data
 }
 
 void removenode(skType * s) {
     struct storage *first_node=s->stack;
-    s->stack=first_node->next;
+    s->stack=first_node->next;//second node become first node
     free(first_node);
 }
 
@@ -100,7 +100,7 @@ dType top (skType * s)//return the top data
 void delStack(skType ** s)//free the memory to the computer memory
 {
     struct storage *del_node;
-    while((*s)->stack){
+    while((*s)->stack){//step by step free memory
         del_node = (*s)->stack;
         (*s)->stack=del_node->next;
 	    free(del_node);
@@ -112,10 +112,10 @@ void delStack(skType ** s)//free the memory to the computer memory
 
 void setData (skType * s, dType data)//put data in the node
 {
-    struct storage *save= malloc(sizeof(struct storage));
-    save->data=data;
+    struct storage *save= malloc(sizeof(struct storage));//create node
+    save->data=data;//Store the item to the node
     save->next=s->stack;
-    s->stack=save;
+    s->stack=save;//link data at first
 }
 
 dType getData (struct storage * s)//return we give the index of data
