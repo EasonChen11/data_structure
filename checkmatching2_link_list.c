@@ -81,7 +81,7 @@ dType pop (skType * s)//remove data
 	if (s->count == 0)
 		return 0; // empty
 	s->count--;//size-1
-	return removenode (s);//get data which in the least node
+	return removenode (s);//remove first node
 }
 
 dType removenode(skType * s) {//remove first node
