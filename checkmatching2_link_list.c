@@ -62,7 +62,7 @@ skType * newStack(void)//create new stack
 {
 	skType * s;
 	s = malloc (sizeof(skType));//create new node
-	s->stack = NULL;//create data first node
+	s->stack = NULL;//create data first node initialize
 	s->count = 0;
 	return s;
 }
@@ -84,12 +84,11 @@ dType pop (skType * s)//remove data
 	return removenode (s);//get data which in the least node
 }
 
-dType removenode(skType * s) {
+dType removenode(skType * s) {//remove first node
     struct storage *first_node=s->stack;
-    dType first_data=first_node->data;
+    dType first_data=first_node->data;//save first node data
     s->stack=first_node->next;
-    free(first_node);
-    //printf("%c ",first_data);
+    free(first_node);//free the first node memory
     return first_data;
 }
 
@@ -101,7 +100,7 @@ dType top (skType * s)//return the top data
 void delStack(skType ** s)//free the memory to the computer memory
 {
     struct storage *del_node;
-    while((*s)->stack){
+    while((*s)->stack){//step by step remove node
         del_node = (*s)->stack;
         (*s)->stack=del_node->next;
 	    free(del_node);
@@ -113,10 +112,10 @@ void delStack(skType ** s)//free the memory to the computer memory
 
 void setData (skType * s, dType data)//put data in the node
 {
-    struct storage *save= malloc(sizeof(struct storage));
-    save->data=data;
+    struct storage *save= malloc(sizeof(struct storage));//create a node
+    save->data=data;//Store the item to the node
     save->next=s->stack;
-    s->stack=save;
+    s->stack=save;//link at first
 }
 
 dType getData (struct storage * s)//return we give the index of data
