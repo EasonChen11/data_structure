@@ -21,13 +21,13 @@ typedef struct {
 
 skType * newStack(void);
 int push (skType *, dType);
-dType pop (skType *);
+void pop (skType *);
 dType top (skType *);
 void delStack(skType **);
 void setData (skType *, dType);
 dType getData (struct storage *);
 int empty(skType *);
-dType removenode(skType * s);
+void removenode(skType * s);
 
 int main(void)
 {
@@ -42,10 +42,12 @@ int main(void)
 	for (i=0; buff[i] != '\0'; ++i) {
 		if (buff[i] == '{' || buff[i] == '[' || buff[i] == '(')//if the operator is open"{[("
 			push (S, buff[i]);//we put the operator to the stack
-		else //if the input is other thing we will skip until the operator is close"}])"
-			if (buff[i] == '}' && pop (S) != '{') break;//check the operator match
-			else if (buff[i] == ']' && pop (S) != '[') break;
-			else if (buff[i] == ')' && pop (S) != '(') break;
+		else{ //if the input is other thing we will skip until the operator is close"}])"
+			if (buff[i] == '}' && top (S) != '{') break;//check the operator match
+			else if (buff[i] == ']' && top (S) != '[') break;
+			else if (buff[i] == ')' && top (S) != '(') break;
+            pop(S);
+        }
 	}//the top operator should be matching if input operator can't match together is error
     //the operator we put before later to match. So,we use stack to save the operator
 	if (empty(S))
@@ -76,21 +78,18 @@ int push (skType * s, dType data)//put the data in the stack
 	return 1;
 }
 
-dType pop (skType * s)//remove data
+void pop (skType * s)//remove data
 {
 	if (s->count == 0)
-		return 0; // empty
+		return; // empty
 	s->count--;//size-1
-	return removenode (s);//get data which in the least node
+	removenode (s);//get data which in the least node
 }
 
-dType removenode(skType * s) {
+void removenode(skType * s) {
     struct storage *first_node=s->stack;
-    dType first_data=first_node->data;
     s->stack=first_node->next;
     free(first_node);
-    //printf("%c ",first_data);
-    return first_data;
 }
 
 dType top (skType * s)//return the top data
