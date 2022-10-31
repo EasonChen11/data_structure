@@ -42,8 +42,8 @@ int main(void)
 	for (i=0; buff[i] != '\0'; ++i) {
 		if (buff[i] == '{' || buff[i] == '[' || buff[i] == '(')//if the operator is open"{[("
 			push (S, buff[i]);//we put the operator to the stack
-		else{ //if the input is other thing we will skip until the operator is close"}])"
-			if (buff[i] == '}' && top (S) != '{') break;//check the operator match
+		else if(buff[i]=='}' || buff[i]==']' || buff[i]==')'){ //if the input is other thing we will skip until the operator is close"}])"
+            if (buff[i] == '}' && top (S) != '{') break;//check the operator match
 			else if (buff[i] == ']' && top (S) != '[') break;
 			else if (buff[i] == ')' && top (S) != '(') break;
             pop(S);
