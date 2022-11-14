@@ -16,23 +16,23 @@
 #define timeNeeded 3  // time needed to process an item
 
 typedef struct item {
-	int id;
-	int arrTime;
+    int id;
+    int arrTime;
 } dType;
 
 typedef struct storage {
-	dType * data;           // to handle a structure
-	struct storage * next;
+    dType * data;           // to handle a structure
+    struct storage * next;
 } stType;  // storage type
 
 
 typedef struct Q {
-	stType * front;
-	stType * rear;
-	int Count;        // number of items in Q
-	int ttlProcessed; // total items processed
-	int ttlWaitTime;  // total waiting time
-	int maxCount;     // largest number of items waiting
+    stType * front;
+    stType * rear;
+    int Count;        // number of items in Q
+    int ttlProcessed; // total items processed
+    int ttlWaitTime;  // total waiting time
+    int maxCount;     // largest number of items waiting
 } QType;
 
 QType * newQ (void);
@@ -48,142 +48,145 @@ void prResult (QType *);
 
 int main(void)
 {
-	int now=0; 
-	char filename[10];
-	stType * L1 = NULL, * P;
-	dType * itemP;
-	QType * Q1;
+    int now=0;
+    char filename[10];
+    stType * L1 = NULL, * P;
+    dType * itemP;
+    QType * Q1;
 
-	printf("Please enter the name of data file: ");
-	scanf("%s", filename);
+    printf("Please enter the name of data file: ");
+    scanf("%s", filename);
 
-	organize (&L1, filename); // getting data in a linked list
+    organize (&L1, filename); // getting data in a linked list
 
-	Q1 = newQ ();
+    Q1 = newQ ();//initial queue
 
-	P = L1;
-	while (P != NULL || ! emptyQ(Q1)) {
-		while (P != NULL && P->data->arrTime <= now) {
-			enQ(Q1, P->data);
-			P = P->next;
-		}
-		if (!emptyQ(Q1)) {
-			itemP = deQ(Q1);
-			Q1->ttlWaitTime += (now - itemP->arrTime);
-			Q1->ttlProcessed += 1;
-			now += timeNeeded;
-		}
-		else now++; 
-	}
+    P = L1;
+    while (P != NULL || ! emptyQ(Q1)) {//if link list isn't at least or queue isn't empty
+        while (P != NULL && P->data->arrTime <= now) {//if the item's arrival time is before now, push into queue
+            enQ(Q1, P->data);//push into pueue
+            P = P->next;
+        }
+        if (!emptyQ(Q1)) {
+            itemP = deQ(Q1);//pop the item out to queue
+            Q1->ttlWaitTime += (now - itemP->arrTime);//wait time is the item arrival time until the item is used
+            Q1->ttlProcessed += 1;//deal with one item
+            now += timeNeeded;//now time will pass the time of deal with one item need times
+        }
+        else now++;//if no item in the queue pass to the next time
+    }
 
-	prResult (Q1);
+    prResult (Q1);//print result
 }
 
-QType * newQ (void)
+QType * newQ (void)//create the queue and initial the value of queue
 {
-	QType * Q = malloc(sizeof (QType));
-	Q->front = NULL;
-	Q->rear = NULL;
-	Q->ttlProcessed = 0;
-	Q->ttlWaitTime = 0;
-	Q->Count = 0;
-	Q->maxCount = 0;
-	return Q;
-}
-
-
-void enQ (QType * Q, dType * item)
-{
-	stType * N = malloc(sizeof(stType));
-	setData (N, item);
-
-	if (emptyQ(Q))
-		Q->front = Q->rear = N;
-	else {
-		Q->rear->next = N;
-		Q->rear = Q->rear->next;
-	}
-	Q->Count += 1;
-	if (Q->Count > Q->maxCount)    // update largest number of waiting
-		Q->maxCount = Q->Count;
+    QType * Q = malloc(sizeof (QType));
+    Q->front = NULL;
+    Q->rear = NULL;
+    Q->ttlProcessed = 0;
+    Q->ttlWaitTime = 0;
+    Q->Count = 0;
+    Q->maxCount = 0;
+    return Q;
 }
 
 
-dType * deQ (QType * Q)
+void enQ (QType * Q, dType * item)//push the data in to the queue
 {
-	dType * item;
+    stType * N = malloc(sizeof(stType));
+    setData (N, item);//put the data into the node
 
-	if (emptyQ(Q)) return NULL;
-	else if (Q->Count == 1) {
-		item = getData (&(Q->front));
-		Q->rear = NULL;
-	}
-	else item = getData (&(Q->front));
-	Q->Count -= 1;
-
-	return item;
+    if (emptyQ(Q))//if queue is empty, front and rear equal to the save value
+        Q->front = Q->rear = N;
+    else {
+        Q->rear->next = N;//node connect to the least of link list, and rear will be the next node of link list
+        Q->rear = Q->rear->next;
+    }
+    Q->Count += 1;//number of node in the queue increase
+    if (Q->Count > Q->maxCount)    // update largest number of waiting
+        Q->maxCount = Q->Count;
 }
 
-int emptyQ (QType * Q)
+
+dType * deQ (QType * Q)//pop the first node of the queue and return its value
 {
-	if (Q->Count == 0) return 1;
-	else return 0;
+    dType * item;
+
+    if (emptyQ(Q)) return NULL;//check the queue whether is empty
+    else if (Q->Count == 1) {//if only have one node, rear will be the NULL
+        item = getData (&(Q->front));
+        Q->rear = NULL;
+    }
+    else item = getData (&(Q->front));//have more than one node, only front be the next, rear don't change
+    Q->Count -= 1;//number of node in the queue decrease
+
+    return item;
 }
 
-void setData (stType * s, dType * data)
+int emptyQ (QType * Q)//check queue whether is empty.
 {
-	s->data = data;
-	s->next = NULL;
+    if (Q->Count == 0) return 1;//is empty return true
+    else return 0;//else return false
 }
 
-dType * getData (stType ** s)
+void setData (stType * s, dType * data)//link the data into the node
 {
-	dType * data;
-	stType * p = *s;
-
-	data = p->data;
-	*s = (*s)->next;
-	free(p);
-	return data;
+    s->data = data;
+    s->next = NULL;//initial the data next link
 }
 
-void organize (stType **L, char * fname)
+dType * getData (stType ** s)//get the front data, front move to next node and remove the before front
 {
-	FILE *fp;
-	int i;
-	stType * P, *N;
+    /*why call by address? We call the Q->front into the function. When we want to change the value about front,
+  we should change Q->front value, but we only call the front value, it can't change the vale of the Q.
+  So, we need call by address to change the global value which will change in the function.*/
+    dType * data;
+    stType * p = *s;
+
+    data = p->data;//get the front data
+    *s = (*s)->next;//front be the next
+    free(p);//free the before front
+    return data;
+}
+
+void organize (stType **L, char * fname)//read the file get the data into the link list
+{
+    FILE *fp;
+    int i;
+    stType * P, *N;
     //printf("%s\n",fname);
-	fp = fopen(fname, "r");
-	
-	*L = malloc (sizeof (stType));
-	(*L)->data = malloc (sizeof (dType));
-	fscanf (fp, "%d%d", &((*L)->data->id),&((*L)->data->arrTime));
-	(*L)->next = NULL;
+    fp = fopen(fname, "r");//open the file
 
-	N = malloc (sizeof (stType));
-	N->data = malloc (sizeof (dType));
-	N->next = NULL;
+    *L = malloc (sizeof (stType));
+    (*L)->data = malloc (sizeof (dType));//first node connect
+    fscanf (fp, "%d%d", &((*L)->data->id),&((*L)->data->arrTime));
+    (*L)->next = NULL;
 
-	P = *L;
-	while (fscanf (fp, "%d%d", &(N->data->id),&(N->data->arrTime)) 
-                      != EOF){
-		P->next = N;
-		P = P->next;
-		N = malloc (sizeof (dType));
-		N->data = malloc (sizeof (dType));
-		N->next = NULL;
-	}
-	free(N->data);
-	free(N);
+    N = malloc (sizeof (stType));//create another node
+    N->data = malloc (sizeof (dType));
+    N->next = NULL;
 
-	fclose(fp);
+    P = *L;
+    while (fscanf (fp, "%d%d", &(N->data->id),&(N->data->arrTime))//read from file until EOF
+           != EOF){
+        P->next = N;
+        P = P->next;//got to next node
+        N = malloc (sizeof (dType));
+        N->data = malloc (sizeof (dType));//create another node
+        N->next = NULL;
+    }
+    free(N->data);
+    free(N);//free the save memory
+
+    fclose(fp);//close the file
 }
-	
-void prResult (QType * Q)
+
+void prResult (QType * Q)//print result of the total processed,total waiting times, number of maximum waiting items and average of waiting times
 {
-	printf("Totally %d items processed\n", Q->ttlProcessed);
-	printf("Totally waiting time: %d \n", Q->ttlWaitTime);
-	printf("Maximum number of items at one time %d \n", Q->maxCount);
-	printf("Average waiting time: %4.2f \n", (Q->ttlWaitTime*1.0)/Q->ttlProcessed);
+    printf("Totally %d items processed\n", Q->ttlProcessed);
+    printf("Totally waiting time: %d \n", Q->ttlWaitTime);
+    printf("Maximum number of items at one time %d \n", Q->maxCount);
+    printf("Average waiting time: %4.2f \n", (Q->ttlWaitTime*1.0)/Q->ttlProcessed);
 }
 
