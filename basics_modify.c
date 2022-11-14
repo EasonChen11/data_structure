@@ -1,195 +1,129 @@
-/** This program simulates the processing of items arriving at different time
-    The sample input file is inputA.txt,
-    in which each line represents item ID and arrival time of an item.
-    The data is read into a linked list.
-    The simulated time is using the increment of "now" in a loop.
-    If the arrival item of an item in the linked list is "now",
-    then it is enqueued.
-    The time required to process an item is set as "timeNeeded".
-    The simulation stops when there is no more items to process.
-    Waiting time and largest number of items in the queue are recorded.
-**/
+/** This program is perform the basic operations of a queue. **/
+/** The storage uses a linked list of integers. **/
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define timeNeeded 3  // time needed to process an item
-
-typedef struct item {
-    int id;
-    int arrTime;
-} dType;
+typedef int dType;
 
 typedef struct storage {
-    dType * data;           // to handle a structure
+    dType data;
     struct storage * next;
 } stType;  // storage type
 
-
-typedef struct Q {
+typedef struct Q {//contain first node, least node and how many node in the link list
     stType * front;
     stType * rear;
     int Count;        // number of items in Q
-    int ttlProcessed; // total items processed
-    int ttlWaitTime;  // total waiting time
-    int maxCount;     // largest number of items waiting
-    int openTime;   //open for next item can deal with
 } QType;
 
+void enQ (QType *, dType);
+dType deQ (QType *);
 QType * newQ (void);
-void enQ (QType *, dType *);
-dType * deQ (QType *);
 int emptyQ (QType *);
 
-void setData (stType *, dType *);
-dType * getData (stType **);
+void setData (stType *, dType);
+dType getData (stType **);
+dType new_getData (stType *);
+void freeNode(stType **);
 
-void organize (stType **, char *);
-void prResult (QType *);
+void clearQ(QType *);
+/**
+I think getData function only deal with get node information.
+I will create a function(freeNode) clearer distinction the function power.
+And create a function to clear the queue.
+**/
 
 int main(void)
 {
-    int now=0;
-    char filename[10];
-    stType * L1 = NULL, * P;
-    dType * itemP;
-    QType * Q1, *Q2;
+    QType *Q1;
 
-    printf("Please enter the name of data file: ");
-    scanf("%s", filename);
-
-    organize (&L1, filename); // getting data in a linked list
-
-    Q1 = newQ ();//initial queue
-    Q2 = newQ ();//initial queue
-
-    P = L1;
-    while (P != NULL || ! emptyQ(Q1)) {//if link list isn't at least or queue isn't empty
-        while (P != NULL && P->data->arrTime <= now) {//if the item's arrival time is before now, push into queue
-            enQ(Q1, P->data);//push into pueue
-            P = P->next;
-        }
-        if (!emptyQ(Q1)) {
-            itemP = deQ(Q1);//pop the item out to queue
-            Q1->ttlWaitTime += (now - itemP->arrTime);//wait time is the item arrival time until the item is used
-            Q1->ttlProcessed += 1;//deal with one item
-            now += timeNeeded;//now time will pass the time of deal with one item need times
-        }
-        else now++;//if no item in the queue pass to the next time
-    }
-
-    prResult (Q1);//print result
+    Q1 = newQ ();
+    enQ (Q1, 10);//put data in the queue
+    enQ (Q1, 20);
+    enQ (Q1, 30);
+    printf("%d\n", deQ(Q1));
+    printf("%d\n", deQ(Q1));
+    printf("%d\n", deQ(Q1));
+    printf("%d\n", deQ(Q1));
+    enQ(Q1, 40);
+    printf("%d\n", deQ(Q1));
+    clearQ(Q1);
 }
 
-QType * newQ (void)//create the queue and initial the value of queue
+QType * newQ (void)//create a new queue and initial the front ,rear and count
 {
-    QType * Q = malloc(sizeof (QType));
+    QType * Q = malloc(sizeof (QType));//create a new node to record front, rear, and count
     Q->front = NULL;
     Q->rear = NULL;
-    Q->ttlProcessed = 0;
-    Q->ttlWaitTime = 0;
-    Q->Count = 0;
-    Q->maxCount = 0;
-    Q->openTime=0;
+    Q->Count = 0;//have no node
     return Q;
 }
 
 
-void enQ (QType * Q, dType * item)//push the data in to the queue
+void enQ (QType * Q, dType item)//add node
 {
-    stType * N = malloc(sizeof(stType));
-    setData (N, item);//put the data into the node
+    stType * N = malloc(sizeof(stType));//create new node of queue
+    setData (N, item);//set information in the node
 
-    if (emptyQ(Q))//if queue is empty, front and rear equal to the save value
+    if (emptyQ(Q))//if new node is the first node, front = rear
         Q->front = Q->rear = N;
     else {
-        Q->rear->next = N;//node connect to the least of link list, and rear will be the next node of link list
+        Q->rear->next = N;//new node connect the rear node ,rear move to the least node,and front don't move
         Q->rear = Q->rear->next;
     }
-    Q->Count += 1;//number of node in the queue increase
-    if (Q->Count > Q->maxCount)    // update largest number of waiting
-        Q->maxCount = Q->Count;
+    Q->Count += 1;//record add one node
 }
 
-
-dType * deQ (QType * Q)//pop the first node of the queue and return its value
+dType deQ (QType * Q)//remove the front of queue
 {
-    dType * item;
+    dType item;
 
-    if (emptyQ(Q)) return NULL;//check the queue whether is empty
-    else if (Q->Count == 1) {//if only have one node, rear will be the NULL
-        item = getData (&(Q->front));
+    if (emptyQ(Q)) return -100000; // incorrect negative number
+    else if (Q->Count == 1) {//if queue only have one node, getData function let front be the next node(NULL), and we should set rear be the NULL
+        item = new_getData(Q->front);
         Q->rear = NULL;
     }
-    else item = getData (&(Q->front));//have more than one node, only front be the next, rear don't change
-    Q->Count -= 1;//number of node in the queue decrease
+    else item = new_getData (Q->front);//if queue have more than one node, only set front be the next node(not NULL)
+    freeNode(&(Q->front));
+    Q->Count -= 1;//decrease recording quantity
 
-    return item;
+    return item;//return which information we remove
 }
 
-int emptyQ (QType * Q)//check queue whether is empty.
+int emptyQ (QType * Q)//check the queue if it's empty
 {
     if (Q->Count == 0) return 1;//is empty return true
-    else return 0;//else return false
+    else return 0;//not empty return false
 }
 
-void setData (stType * s, dType * data)//link the data into the node
+void setData (stType * s, dType data)//set information record in the node
 {
-    s->data = data;
-    s->next = NULL;//initial the data next link
+    s->data = data;//record the information in the node
+    s->next = NULL;//initial node connect
 }
 
-dType * getData (stType ** s)//get the front data, front move to next node and remove the before front
+dType getData (stType ** s)//git the queue first data and remove the node
 {
-    /*why call by address? We call the Q->front into the function. When we want to change the value about front,
-  we should change Q->front value, but we only call the front value, it can't change the vale of the Q.
-  So, we need call by address to change the global value which will change in the function.*/
-    dType * data;
+    dType data;
     stType * p = *s;
 
-    data = p->data;//get the front data
-    *s = (*s)->next;//front be the next
-    free(p);//free the before front
-    return data;
+    data = p->data;//get the information of node
+    *s = (*s)->next;//be the next node
+    free(p);//free the memory
+    return data;//return get information
 }
-
-void organize (stType **L, char * fname)//read the file get the data into the link list
-{
-    FILE *fp;
-    int i;
-    stType * P, *N;
-    //printf("%s\n",fname);
-    fp = fopen(fname, "r");//open the file
-
-    *L = malloc (sizeof (stType));
-    (*L)->data = malloc (sizeof (dType));//first node connect
-    fscanf (fp, "%d%d", &((*L)->data->id),&((*L)->data->arrTime));
-    (*L)->next = NULL;
-
-    N = malloc (sizeof (stType));//create another node
-    N->data = malloc (sizeof (dType));
-    N->next = NULL;
-
-    P = *L;
-    while (fscanf (fp, "%d%d", &(N->data->id),&(N->data->arrTime))//read from file until EOF
-           != EOF){
-        P->next = N;
-        P = P->next;//got to next node
-        N = malloc (sizeof (dType));
-        N->data = malloc (sizeof (dType));//create another node
-        N->next = NULL;
+dType new_getData (stType *s){
+    return s->data;//return get information
+}
+void freeNode(stType **s){
+    stType *p=*s;
+    (*s)=(*s)->next;
+    free(p);
+}
+void clearQ(QType *Q){//free memory
+    while (!emptyQ(Q)){//if the queue not empty
+        freeNode(&(Q->front));//step by step free the queue node
     }
-    free(N->data);
-    free(N);//free the save memory
-
-    fclose(fp);//close the file
+    free(Q);//free the recording front, rear, and count node
 }
-
-void prResult (QType * Q)//print result of the total processed,total waiting times, number of maximum waiting items and average of waiting times
-{
-    printf("Totally %d items processed\n", Q->ttlProcessed);
-    printf("Totally waiting time: %d \n", Q->ttlWaitTime);
-    printf("Maximum number of items at one time %d \n", Q->maxCount);
-    printf("Average waiting time: %4.2f \n", (Q->ttlWaitTime*1.0)/Q->ttlProcessed);
-}
-
