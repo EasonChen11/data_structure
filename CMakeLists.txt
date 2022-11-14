@@ -7,3 +7,6 @@ add_executable(basics basics.c)
 add_executable(basics_modify basics_modify.c)
 
 add_executable(simulate simulate.c)
+add_executable(simulate_modify simulate_modify.c)
+
+add_executable(create_inputA create_inputA.c)

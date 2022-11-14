@@ -1,9 +1,9 @@
 /** This program simulates the processing of items arriving at different time
-    The sample input file is inputA.txt, 
+    The sample input file is inputA.txt,
     in which each line represents item ID and arrival time of an item.
-    The data is read into a linked list. 
+    The data is read into a linked list.
     The simulated time is using the increment of "now" in a loop.
-    If the arrival item of an item in the linked list is "now", 
+    If the arrival item of an item in the linked list is "now",
     then it is enqueued.
     The time required to process an item is set as "timeNeeded".
     The simulation stops when there is no more items to process.
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #define timeNeeded 3  // time needed to process an item
+#define max(a, b) a>b?a:b
 
 typedef struct item {
     int id;
@@ -33,6 +34,7 @@ typedef struct Q {
     int ttlProcessed; // total items processed
     int ttlWaitTime;  // total waiting time
     int maxCount;     // largest number of items waiting
+    int openTime;   //open for next item can deal with
 } QType;
 
 QType * newQ (void);
@@ -44,15 +46,15 @@ void setData (stType *, dType *);
 dType * getData (stType **);
 
 void organize (stType **, char *);
-void prResult (QType *);
+void prResult (QType *, QType *);
 
 int main(void)
 {
     int now=0;
-    char filename[10];
+    char filename[20];
     stType * L1 = NULL, * P;
     dType * itemP;
-    QType * Q1;
+    QType * Q1, *Q2;
 
     printf("Please enter the name of data file: ");
     scanf("%s", filename);
@@ -60,23 +62,32 @@ int main(void)
     organize (&L1, filename); // getting data in a linked list
 
     Q1 = newQ ();//initial queue
+    Q2 = newQ ();//initial queue
 
     P = L1;
-    while (P != NULL || ! emptyQ(Q1)) {//if link list isn't at least or queue isn't empty
+    while (P != NULL || ! emptyQ(Q1) || !emptyQ(Q2)) {//if link list isn't at least or two queues aren't empty
         while (P != NULL && P->data->arrTime <= now) {//if the item's arrival time is before now, push into queue
-            enQ(Q1, P->data);//push into queue
+            if (Q1->Count <= Q2->Count)//choice the number if items in the node
+                enQ(Q1, P->data);//push into queue
+            else enQ(Q2, P->data);//push into queue
             P = P->next;
         }
-        if (!emptyQ(Q1)) {
+        if (!emptyQ(Q1) && Q1->openTime<=now) {
             itemP = deQ(Q1);//pop the item out to queue
             Q1->ttlWaitTime += (now - itemP->arrTime);//wait time is the item arrival time until the item is used
             Q1->ttlProcessed += 1;//deal with one item
-            now += timeNeeded;//now time will pass the time of deal with one item need times
+            Q1->openTime = now + timeNeeded;//remember what time can deal with next item
         }
-        else now++;//if no item in the queue pass to the next time
+        if (!emptyQ(Q2) && Q2->openTime<=now) {
+            itemP = deQ(Q2);//pop the item out to queue
+            Q2->ttlWaitTime += (now - itemP->arrTime);//wait time is the item arrival time until the item is used
+            Q2->ttlProcessed += 1;//deal with one item
+            Q2->openTime = now + timeNeeded;//remember what time can deal with next item
+        }
+        now++;//always one second passed
     }
 
-    prResult (Q1);//print result
+    prResult (Q1, Q2);//print result
 }
 
 QType * newQ (void)//create the queue and initial the value of queue
@@ -88,6 +99,7 @@ QType * newQ (void)//create the queue and initial the value of queue
     Q->ttlWaitTime = 0;
     Q->Count = 0;
     Q->maxCount = 0;
+    Q->openTime=0;
     return Q;
 }
 
@@ -104,8 +116,7 @@ void enQ (QType * Q, dType * item)//push the data in to the queue
         Q->rear = Q->rear->next;
     }
     Q->Count += 1;//number of node in the queue increase
-    if (Q->Count > Q->maxCount)    // update largest number of waiting
-        Q->maxCount = Q->Count;
+    Q->maxCount = max(Q->Count, Q->maxCount);    // update largest number of waiting
 }
 
 
@@ -157,7 +168,11 @@ void organize (stType **L, char * fname)//read the file get the data into the li
     stType * P, *N;
     //printf("%s\n",fname);
     fp = fopen(fname, "r");//open the file
-
+    if(fp==NULL){
+        printf("%s can't open\n",fname);
+        return;
+    }
+    printf("open file %s success\n",fname);
     *L = malloc (sizeof (stType));
     (*L)->data = malloc (sizeof (dType));//first node connect
     fscanf (fp, "%d%d", &((*L)->data->id),&((*L)->data->arrTime));
@@ -182,11 +197,11 @@ void organize (stType **L, char * fname)//read the file get the data into the li
     fclose(fp);//close the file
 }
 
-void prResult (QType * Q)//print result of the total processed,total waiting times, number of maximum waiting items and average of waiting times
+void prResult (QType * Q1, QType *Q2)//print result of the total processed,total waiting times, number of maximum waiting items and average of waiting times
 {
-    printf("Totally %d items processed\n", Q->ttlProcessed);
-    printf("Totally waiting time: %d \n", Q->ttlWaitTime);
-    printf("Maximum number of items at one time %d \n", Q->maxCount);
-    printf("Average waiting time: %4.2f \n", (Q->ttlWaitTime*1.0)/Q->ttlProcessed);
+    printf("Totally %d items processed\n", Q1->ttlProcessed+Q2->ttlProcessed);
+    printf("Totally waiting time: %d \n", Q1->ttlWaitTime+Q2->ttlWaitTime);
+    printf("Maximum number of items at one time %d \n", max(Q1->maxCount,Q2->maxCount));
+    printf("Average waiting time: %4.2f \n", ((Q1->ttlWaitTime+Q2->ttlWaitTime)*1.0)/(Q1->ttlProcessed+Q2->ttlProcessed));
 }
 
