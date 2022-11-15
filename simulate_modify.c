@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
 #define timeNeeded 3  // time needed to process an item
 #define max(a, b) a>b?a:b
 
@@ -60,7 +60,7 @@ int main(void)
 
     printf("Please enter the name of data file: ");
     scanf("%s", filename);
-    strcpy(filename,"inputA.txt");
+
     organize (&L1, filename); // getting data in a linked list
 
     Q1 = newQ ();//initial queue
