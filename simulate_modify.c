@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #define timeNeeded 3  // time needed to process an item
 #define max(a, b) a>b?a:b
 
@@ -48,6 +48,8 @@ dType * getData (stType **);
 void organize (stType **, char *);
 void prResult (QType *, QType *);
 
+int cmp(QType * Q1, QType * Q2);
+
 int main(void)
 {
     int now=0;
@@ -58,7 +60,7 @@ int main(void)
 
     printf("Please enter the name of data file: ");
     scanf("%s", filename);
-
+    strcpy(filename,"inputA.txt");
     organize (&L1, filename); // getting data in a linked list
 
     Q1 = newQ ();//initial queue
@@ -67,7 +69,7 @@ int main(void)
     P = L1;
     while (P != NULL || ! emptyQ(Q1) || !emptyQ(Q2)) {//if link list isn't at least or two queues aren't empty
         while (P != NULL && P->data->arrTime <= now) {//if the item's arrival time is before now, push into queue
-            if (Q1->Count <= Q2->Count)//choice the number if items in the node
+            if (cmp(Q1,Q2))//choice the number if items in the node
                 enQ(Q1, P->data);//push into queue
             else enQ(Q2, P->data);//push into queue
             P = P->next;
@@ -88,6 +90,19 @@ int main(void)
     }
 
     prResult (Q1, Q2);//print result
+}
+
+int cmp(QType * Q1, QType * Q2) {
+    if(Q1->Count==Q2->Count){
+        if(Q1->openTime<Q2->openTime)
+            return 1;
+        else
+            return 0;
+    }
+    if(Q1->Count<Q2->Count)
+        return 1;
+    else
+        return 0;
 }
 
 QType * newQ (void)//create the queue and initial the value of queue
