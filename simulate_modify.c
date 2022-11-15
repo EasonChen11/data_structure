@@ -92,17 +92,17 @@ int main(void)
     prResult (Q1, Q2);//print result
 }
 
-int cmp(QType * Q1, QType * Q2) {
-    if(Q1->Count==Q2->Count){
-        if(Q1->openTime<Q2->openTime)
-            return 1;
+int cmp(QType * Q1, QType * Q2) {//choice item into which queue
+    if(Q1->Count==Q2->Count){//count equal
+        if(Q1->openTime<Q2->openTime)//check opentime
+            return 1;//Q1
         else
-            return 0;
+            return 0;//Q2
     }
     if(Q1->Count<Q2->Count)
-        return 1;
+        return 1;//Q1
     else
-        return 0;
+        return 0;//Q2
 }
 
 QType * newQ (void)//create the queue and initial the value of queue
