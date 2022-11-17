@@ -18,13 +18,14 @@ typedef struct node {
 void insert (bstType **, bstType *);
 void search (bstType *, int);
 void inorder (bstType *);
+void preorder (bstType *);
 bstType * getData (int, FILE *);
 
 int main(void)
 {
 	bstType * tree, * data;
 	int phone;
-	FILE *fp = fopen("test.txt", "r");//open file
+	FILE *fp = fopen("./Lab06/test.txt", "r");//open file
 
 	tree = NULL;
 
@@ -39,7 +40,8 @@ int main(void)
 
 	printf("Performing Inorder Traversal ... \n");
 	inorder (tree);//print inorder traversal
-
+    printf("Performing Preorder Traversal ... \n");
+    preorder(tree);
 	fclose(fp);//closed file
 }
 
@@ -93,3 +95,13 @@ void inorder (bstType * t)//left->root->right
 	}
 }
 
+void preorder (bstType * t)//left->root->right
+{
+    if (t != NULL) {//not at the end of leaf
+        printf("Phone: %d\n", t->phone);//print root's data
+        printf("Room: %s\n", t->room);
+        printf("Name: %s %s\n", t->fname, t->lname);
+        preorder(t->left);//go to left node
+        preorder(t->right);//go to right node
+    }
+}
