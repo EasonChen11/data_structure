@@ -19,6 +19,7 @@ void insert (bstType **, bstType *);
 void search (bstType *, int);
 void inorder (bstType *);
 void preorder (bstType *);
+void postorder (bstType *);
 bstType * getData (int, FILE *);
 
 int main(void)
@@ -40,9 +41,11 @@ int main(void)
 
 	printf("Performing Inorder Traversal ... \n");
 	inorder (tree);//print inorder traversal
-    printf("Performing Preorder Traversal ... \n");
+    printf("\nPerforming Preorder Traversal ... \n");
     preorder(tree);
-	fclose(fp);//closed file
+    printf("\nPerforming Postorder Traversal ... \n");
+    postorder(tree);
+    fclose(fp);//closed file
 }
 
 bstType * getData (int phone, FILE * fp)//create new data node and storage phone number, room name and first and least name.
@@ -95,7 +98,7 @@ void inorder (bstType * t)//left->root->right
 	}
 }
 
-void preorder (bstType * t)//left->root->right
+void preorder (bstType * t)//root->left->right
 {
     if (t != NULL) {//not at the end of leaf
         printf("Phone: %d\n", t->phone);//print root's data
@@ -103,5 +106,16 @@ void preorder (bstType * t)//left->root->right
         printf("Name: %s %s\n", t->fname, t->lname);
         preorder(t->left);//go to left node
         preorder(t->right);//go to right node
+    }
+}
+
+void postorder (bstType * t)//left->right->root
+{
+    if (t != NULL) {//not at the end of leaf
+        preorder(t->left);//go to left node
+        preorder(t->right);//go to right node
+        printf("Phone: %d\n", t->phone);//print root's data
+        printf("Room: %s\n", t->room);
+        printf("Name: %s %s\n", t->fname, t->lname);
     }
 }
