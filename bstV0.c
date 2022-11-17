@@ -20,7 +20,6 @@ int main(void)
 {
 	bstType * tree, * data;
 	int phone;
-
 	tree = NULL;//the BST is empty
 
 	printf("Please enter a phone number: ");
