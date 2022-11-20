@@ -15,12 +15,30 @@ typedef struct node {
 	struct node *right;
 } bstType;
 
+typedef struct storage {
+    bstType * data;           // to handle a structure
+    struct storage * next;
+} stType;  // storage type
+typedef struct Q {
+    stType * front;
+    stType * rear;
+    int Count;        // number of items in Q
+} QType;
+
 void insert (bstType **, bstType *);
 void search (bstType *, int);
 void inorder (bstType *);
 void preorder (bstType *);
 void postorder (bstType *);
 bstType * getData (int, FILE *);
+
+void BFS(bstType *);
+QType * newQ (void);
+void enQ (QType *, bstType *);
+void deQ (QType *);
+int emptyQ (QType *);
+void setData(stType *, bstType *);
+stType * frontQ(stType *);
 
 int main(void)
 {
@@ -45,6 +63,8 @@ int main(void)
     preorder(tree);
     printf("\nPerforming Postorder Traversal ... \n");
     postorder(tree);
+    printf("\nPerforming Breadth first traversal ... \n");
+    BFS(tree);
     fclose(fp);//closed file
 }
 
@@ -79,7 +99,6 @@ void search (bstType * t, int key)//check the key in the BST
 		printf("Phone: %d\n", key);
 		printf("Room: %s\n", t->room);
 		printf("Name: %s %s\n", t->fname, t->lname);
-		printf("Room: %s\n", t->room);
 	}
 	else 
 		if (t->phone > key) //left data smaller than root's data
@@ -118,4 +137,69 @@ void postorder (bstType * t)//left->right->root
         printf("Room: %s\n", t->room);
         printf("Name: %s %s\n", t->fname, t->lname);
     }
+}
+
+void BFS(bstType * t){
+    QType *Q=newQ();
+    enQ(Q,t);
+    while (!emptyQ(Q)){
+        stType * currentPoint=frontQ(Q->front);
+        deQ(Q);
+        enQ(Q,currentPoint->data->left);
+        enQ(Q,currentPoint->data->right);
+    }
+}
+
+QType * newQ(){
+    QType * Q = malloc(sizeof (QType));
+    Q->front = NULL;
+    Q->rear = NULL;
+    Q->Count = 0;
+    return Q;
+}
+
+void enQ (QType * Q, bstType * item)//push the data in to the queue
+{
+    if(item==NULL)return;
+
+    stType * N = malloc(sizeof(stType));
+    setData (N, item);//put the data into the node
+
+    if (emptyQ(Q))//if queue is empty, front and rear equal to the save value
+        Q->front = Q->rear = N;
+    else {
+        Q->rear->next = N;//node connect to the least of link list, and rear will be the next node of link list
+        Q->rear = Q->rear->next;
+    }
+    Q->Count += 1;//number of node in the queue increase
+}
+
+void deQ (QType * Q)//pop the first node of the queue and return its value
+{
+    if (emptyQ(Q)) return;//check the queue whether is empty
+    else if (Q->Count == 1) {//if only have one node, rear will be the NULL
+        Q->front=NULL;
+        Q->rear = NULL;
+    }
+    else Q->front=Q->front->next;//have more than one node, only front be the next, rear don't change
+    Q->Count -= 1;//number of node in the queue decrease
+}
+
+int emptyQ (QType * Q)//check queue whether is empty.
+{
+    if (Q->Count == 0) return 1;//is empty return true
+    else return 0;//else return false
+}
+
+void setData (stType * s, bstType * data)//link the data into the node
+{
+    s->data = data;
+    s->next = NULL;//initial the data next link
+}
+
+stType * frontQ(stType * s){
+    printf("Phone: %d\n", s->data->phone);
+    printf("Room: %s\n",  s->data->room);
+    printf("Name: %s %s\n",  s->data->fname,  s->data->lname);
+    return s;
 }
