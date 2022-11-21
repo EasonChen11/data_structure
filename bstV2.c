@@ -38,7 +38,7 @@ void enQ (QType *, bstType *);
 void deQ (QType *);
 int emptyQ (QType *);
 void setData(stType *, bstType *);
-stType * frontQ(stType *);
+stType frontQ(stType * s);
 
 int main(void)
 {
@@ -112,7 +112,7 @@ void inorder (bstType * t)//left->root->right
 		inorder(t->left);//go to left node
 		printf("Phone: %d\n", t->phone);//if at the end of left leaf, print the data
 		printf("Room: %s\n", t->room);
-		printf("Name: %s %s\n", t->fname, t->lname);
+		printf("Name: %s %s\n\n", t->fname, t->lname);
 		inorder(t->right);//go to right node
 	}
 }
@@ -122,7 +122,7 @@ void preorder (bstType * t)//root->left->right
     if (t != NULL) {//not at the end of leaf
         printf("Phone: %d\n", t->phone);//print root's data
         printf("Room: %s\n", t->room);
-        printf("Name: %s %s\n", t->fname, t->lname);
+        printf("Name: %s %s\n\n", t->fname, t->lname);
         preorder(t->left);//go to left node
         preorder(t->right);//go to right node
     }
@@ -135,7 +135,7 @@ void postorder (bstType * t)//left->right->root
         preorder(t->right);//go to right node
         printf("Phone: %d\n", t->phone);//print root's data
         printf("Room: %s\n", t->room);
-        printf("Name: %s %s\n", t->fname, t->lname);
+        printf("Name: %s %s\n\n", t->fname, t->lname);
     }
 }
 
@@ -154,10 +154,11 @@ void BFT(bstType * t)//Breadth first traversal
     QType *Q=newQ();//create queue
     enQ(Q,t);//put BST top node into queue
     while (!emptyQ(Q)){//until queue is empty
-        stType * currentPoint=frontQ(Q->front);//get the queue front node
+        stType currentPoint=frontQ(Q->front);//get the queue front node
         deQ(Q);//remove front node
-        enQ(Q,currentPoint->data->left);//put the left node into queue rear
-        enQ(Q,currentPoint->data->right);//put the right node into queue rear
+        enQ(Q,currentPoint.data->left);//put the left node into queue rear
+        enQ(Q,currentPoint.data->right);//put the right node into queue rear
+
     }
 }
 
@@ -189,7 +190,7 @@ void enQ (QType * Q, bstType * item)//push the data in to the queue
 void deQ (QType * Q)//pop the first node of the queue and return its value
 {
     if (emptyQ(Q)) return;//check the queue whether is empty
-    stType * prepareRemoveNde=Q->front;//storage first node before remove it
+    stType * prepareRemoveNode=Q->front;//storage first node before remove it
     if (Q->Count == 1) {//if only have one node, rear will be the NULL
         Q->front=NULL;
         Q->rear = NULL;
@@ -197,7 +198,7 @@ void deQ (QType * Q)//pop the first node of the queue and return its value
     else {
         Q->front=Q->front->next;//have more than one node, only front be the next, rear don't change
     }
-    free(prepareRemoveNde);
+    free(prepareRemoveNode);
     Q->Count -= 1;//number of node in the queue decrease
 }
 
@@ -213,10 +214,10 @@ void setData (stType * s, bstType * data)//link the data into the node
     s->next = NULL;//initial the data next link
 }
 
-stType * frontQ(stType * s)//print first data in the queue and return the first node
+stType frontQ(stType * s)//print first data in the queue and return the first node
 {
     printf("Phone: %d\n", s->data->phone);
     printf("Room: %s\n",  s->data->room);
-    printf("Name: %s %s\n",  s->data->fname,  s->data->lname);
-    return s;
+    printf("Name: %s %s\n\n",  s->data->fname,  s->data->lname);
+    return *s;
 }
