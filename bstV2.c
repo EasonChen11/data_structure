@@ -17,7 +17,7 @@ typedef struct node {
 
 typedef struct storage {
     bstType * data;           // to handle a structure
-    struct storage * next;
+    struct storage * next;    //next storage node
 } stType;  // storage type
 typedef struct Q {
     stType * front;
@@ -32,7 +32,7 @@ void preorder (bstType *);
 void postorder (bstType *);
 bstType * getData (int, FILE *);
 
-void BFS(bstType *);
+void BFT(bstType *);
 QType * newQ (void);
 void enQ (QType *, bstType *);
 void deQ (QType *);
@@ -64,7 +64,7 @@ int main(void)
     printf("\nPerforming Postorder Traversal ... \n");
     postorder(tree);
     printf("\nPerforming Breadth first traversal ... \n");
-    BFS(tree);
+    BFT(tree);
     fclose(fp);//closed file
 }
 
@@ -139,18 +139,30 @@ void postorder (bstType * t)//left->right->root
     }
 }
 
-void BFS(bstType * t){
-    QType *Q=newQ();
-    enQ(Q,t);
-    while (!emptyQ(Q)){
-        stType * currentPoint=frontQ(Q->front);
-        deQ(Q);
-        enQ(Q,currentPoint->data->left);
-        enQ(Q,currentPoint->data->right);
+void BFT(bstType * t)//Breadth first traversal
+{
+/***
+ * First,we enQ top of the BST.
+ * Then, we will repeat doing something until queue is empty:
+ * 1. get queue's front node.
+ * 2. deQ. Because this node is traveled.
+ * 3. put left and right node into queue.
+ * Because we only put left and right into queue and don't travel to left or right,
+ * we will travel the nodes which is in the same level. Then, go to next level.
+ * When we go around any level, queue have storage next level node.
+ * ***/
+    QType *Q=newQ();//create queue
+    enQ(Q,t);//put BST top node into queue
+    while (!emptyQ(Q)){//until queue is empty
+        stType * currentPoint=frontQ(Q->front);//get the queue front node
+        deQ(Q);//remove front node
+        enQ(Q,currentPoint->data->left);//put the left node into queue rear
+        enQ(Q,currentPoint->data->right);//put the right node into queue rear
     }
 }
 
-QType * newQ(){
+QType * newQ()//initial queue
+{
     QType * Q = malloc(sizeof (QType));
     Q->front = NULL;
     Q->rear = NULL;
@@ -177,11 +189,15 @@ void enQ (QType * Q, bstType * item)//push the data in to the queue
 void deQ (QType * Q)//pop the first node of the queue and return its value
 {
     if (emptyQ(Q)) return;//check the queue whether is empty
-    else if (Q->Count == 1) {//if only have one node, rear will be the NULL
+    stType * prepareRemoveNde=Q->front;//storage first node before remove it
+    if (Q->Count == 1) {//if only have one node, rear will be the NULL
         Q->front=NULL;
         Q->rear = NULL;
     }
-    else Q->front=Q->front->next;//have more than one node, only front be the next, rear don't change
+    else {
+        Q->front=Q->front->next;//have more than one node, only front be the next, rear don't change
+    }
+    free(prepareRemoveNde);
     Q->Count -= 1;//number of node in the queue decrease
 }
 
@@ -197,7 +213,8 @@ void setData (stType * s, bstType * data)//link the data into the node
     s->next = NULL;//initial the data next link
 }
 
-stType * frontQ(stType * s){
+stType * frontQ(stType * s)//print first data in the queue and return the first node
+{
     printf("Phone: %d\n", s->data->phone);
     printf("Room: %s\n",  s->data->room);
     printf("Name: %s %s\n",  s->data->fname,  s->data->lname);
