@@ -131,8 +131,8 @@ void preorder (bstType * t)//root->left->right
 void postorder (bstType * t)//left->right->root
 {
     if (t != NULL) {//not at the end of leaf
-        preorder(t->left);//go to left node
-        preorder(t->right);//go to right node
+        postorder(t->left);//go to left node
+        postorder(t->right);//go to right node
         printf("Phone: %d\n", t->phone);//print root's data
         printf("Room: %s\n", t->room);
         printf("Name: %s %s\n\n", t->fname, t->lname);
