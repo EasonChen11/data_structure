@@ -33,7 +33,7 @@ int readArray (aType a[])//read from file and put data into array
 	scanf ("%s",filename);//enter file name
 	fp = fopen (filename, "r");//open file to read
 
-	while (fscanf(fp, "%d", &a[count++]) != EOF);//read number from the file and put into array
+	while (fscanf(fp, "%d", &a[count++]) != EOF && count+1<SIZE);//read number from the file and put into array and check input number not overflow
 
 	fclose(fp);//close file
 
@@ -53,19 +53,19 @@ void heapify(aType H[], int size)//from file array put into heap
 {
 	int i;
 
-	for (i=1;i<size; ++i){
-		if (H[i] > H[(i-1)/2])
+	for (i=1;i<size; ++i){//i from 1 to start because avid i-1<0 first node is H[0]
+		if (H[i] > H[(i-1)/2])//if the father point is smaller than child node(now we at the i index in the array)
 			reheapup(H, i);
 		printArray(H,size);
 	}
 }
 
-void reheapup(aType H[], int start)//
+void reheapup(aType H[], int start)//change node and create heap
 {
 	int i, temp;
 
-	for (i=start; i>0; i=(i-1)/2)
-		if (H[i] > H[(i-1)/2]) {
+	for (i=start; i>0; i=(i-1)/2)//we at the node which we want to change the place of array and step by step go to father node to check
+		if (H[i] > H[(i-1)/2]) {//if the father point is smaller than child node(now we at the i index in the array)
 			temp=H[(i-1)/2];//swap father node and child node
 			H[(i-1)/2] = H[i];
 			H[i] = temp;
