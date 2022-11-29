@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #define SIZE 100
 typedef int aType;
@@ -8,49 +7,65 @@ int readArray (aType []);
 void printArray (aType [], int);
 void heapify(aType [], int);
 void reheapup(aType [], int);
-void FindingTheLargestDataItems(int [], aType *);
+int FindingTheLargestDataItems(aType heap[], aType * count);
 void reheapdown(aType [], aType);
 void swap(aType *,aType *);
 int main(void)
 {
     aType count,repeatTimes;
 	aType array[SIZE];//create array and set size
-
+    aType maxNumber[SIZE];
 	count=readArray(array);//count storage the least index of array
+    if(count==0){//check the heap weather empty
+        printf("heap is empty!\n");
+        return 0;
+    }
+
 	printf("\nContent of array:\n");
 	printArray(array, count);
 
 	printf("\nProcessing heapify:\n");
 	heapify(array,count);//set array -> heap
-    printf("How many times:");
-    scanf("%d",&repeatTimes);
-    while (repeatTimes--)FindingTheLargestDataItems(array,&count);
+    printf("\nFind the k largest\n");
+    while(1){
+        printf("k=");//read the k
+        scanf("%d", &repeatTimes);
+        if(repeatTimes<=count)//repeat_time is legal
+            break;
+        else
+            printf("k is out of range\n");
+    }
+    for (int i = 1; i <= repeatTimes; ++i) {
+        printf("\nthe %d largest number: ",i);
+        maxNumber[i-1]=FindingTheLargestDataItems(array, &count);//get the largest number in the heap
+    }
+    printf("k=%d :\n",repeatTimes);
+    printArray(maxNumber,repeatTimes);//print the larger number list
 }
 
-void FindingTheLargestDataItems(aType heap[], aType * count) {
-    if(*count==0){
-        printf("heap is empty!\n");
-        return;
-    }
+int FindingTheLargestDataItems(aType heap[], aType * count) {//find the largest in the heap and remove it. then ,heapify.
+    aType maxNumberInHeap=heap[0];
+    printf("%d\n",maxNumberInHeap);//print larger number
     printf("heap:\n");
+    printArray(heap,*count);//print heap before remove the largest number
+    printf("remove largest number %d\n",heap[0]);
+    heap[0]=heap[--(*count)];//change fist node and the least node and size of list minus 1
+    reheapdown(heap, *count);
     printArray(heap,*count);
-    printf("Largest number: %d\n",heap[0]);
-    heap[0]=heap[*count-1];
-    reheapdown(heap, --(*count));
-    printArray(heap,*count);
+    return maxNumberInHeap;//return the largest number
 }
 
 void reheapdown(aType heap[], aType count) {
     aType i,start=0;
-    for(i=start;i<count;){//up down
+    for(i=start;i<count;){//top down
         printArray(heap,count);
-        aType j;
-        if(heap[i*2+1]>=heap[i*2+2])
-            j=i*2+1;
+        aType j;//storage the largest index of children
+        if(heap[i*2+1]>=heap[i*2+2])//left child's number bigger than right child's number
+            j=i*2+1;//storage left child's index
         else
-            j=i*2+2;
-        if(heap[i]<heap[j] && j<count){
-            swap(&heap[i],&heap[j]);
+            j=i*2+2;//storage right child's index
+        if(heap[i]<heap[j] && j<count){//if father have children, and check father smaller than children
+            swap(&heap[i],&heap[j]);//swap node
             i=j;
         }else
             break;
@@ -66,7 +81,6 @@ int readArray (aType a[])//read from file and put data into array
 	printf("Please enter a filename: ");
 	scanf ("%s",filename);//enter file name
 	fp = fopen (filename, "r");//open file to read
-
 	while (fscanf(fp, "%d", &a[count++]) != EOF && count+1<SIZE);//read number from the file and put into array and check input number not overflow
 
 	fclose(fp);//close file
@@ -106,7 +120,7 @@ void reheapup(aType H[], aType start)//change node and create heap
 		}
 }
 
-void swap(aType *small,aType *big){
+void swap(aType *small,aType *big){//change the two number in the list
     aType save=*small;
     *small=*big;
     *big=save;
