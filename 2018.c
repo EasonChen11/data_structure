@@ -22,6 +22,7 @@ int main() {
     int heapSize=readFile(heap);
     printdata(heap,heapSize);
     heapsort(heap,heapSize);
+    printdata(heap,heapSize);
     return 0;
 }
 

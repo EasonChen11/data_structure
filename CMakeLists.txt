@@ -3,4 +3,4 @@ project(data_structure C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(initial initial.c)
+add_executable(initial 2018.c)
