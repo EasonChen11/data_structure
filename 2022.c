@@ -1,4 +1,4 @@
-//³¯¼Ý°a410415069
+//410415069
 #include <stdio.h>
 #include <stdlib.h>
 struct BSTnode{
@@ -64,8 +64,8 @@ void connect(BST** head,BST* New){
 }
 void inorder(BST *bst){
     if(bst==NULL)return;
-    printf("%d ",bst->number);
     inorder(bst->left);
+    printf("%d ",bst->number);
     inorder(bst->right);
 }
 
