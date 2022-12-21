@@ -26,18 +26,18 @@ int Readfile(int data[]) {
 
 void SelectionSort(int list[], int size) {
     int index=0;
-    while(index<size){
+    while(index<size){//step by step check all the value in the list
         printf("step %d:\n",index);
         PrintList(list,size);
-        int minValue=list[index],minIndex=index,i;
-        for (i = index+1; i < size; ++i) {
-            if(minValue>list[i]){
+        int minValue=list[index],minIndex=index,i;//storage the min value and its index
+        for (i = index+1; i < size; ++i) {//go through all the value behind of not sorting list
+            if(minValue>list[i]){//if find the smaller value -> change value and index
                 minIndex=i;
                 minValue=list[minIndex];
             }
-            swap(&list[index],&list[minIndex]);
-            index++;
         }
+        swap(&list[index],&list[minIndex]);//change the minimum value to the correct place
+        index++;
     }
 }
 

@@ -23,12 +23,14 @@ int Readfile(int data[]) {
 }
 
 void InsertionSort(int list[], int size) {
-    int index=0;
-    while(index<size){
-        int insertValue=list[index],i=index-1;
-        while ( i >=0 && insertValue<list[i]) {
-                list[index]=list[i--];
+    int index=0;//first node
+    while(index<size){//until end of list
+        int insertValue=list[index],i=index;//storage which vale we wont to insert and i is the check lab in the list
+        while ( i >0 && insertValue<=list[i-1]) {//if lab in the list and the before vale bigger than insert value
+                list[i]=list[i-1];//go to the next step to storage
+                i--;
         }
+        list[i]=insertValue;//put insert vale in the correct sit
         printf("step %d:\n",index++);
         PrintList(list,size);
     }
