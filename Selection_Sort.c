@@ -1,13 +1,4 @@
-#include <stdio.h>
-#define SIZE 50000
-
-int Readfile(int data[]);
-
-void SelectionSort(int list[], int size);
-
-void swap(int * a, int * b);
-
-void PrintList(int list[], int size);
+#include "lab08a.h"
 
 int main() {
     int data[SIZE],size;
@@ -16,7 +7,7 @@ int main() {
     return 0;
 }
 
-int Readfile(int data[]) {
+int Readfile(int data[]) {//read file list.txt and return list size
     FILE* fp= fopen("list.txt","r");
     int input,index=0;
     while ( fscanf(fp,"%d",&data[index++])!=EOF);
@@ -43,13 +34,13 @@ void SelectionSort(int list[], int size) {
 
 void PrintList(int list[], int size) {
     int i;
-    for (i = 0; i < size; ++i) {
+    for (i = 0; i < size; ++i) {//print all the data
         printf("%d ",list[i]);
     }
     putchar('\n');
 }
 
-void swap(int * a, int * b) {
+void swap(int * a, int * b) {//change the two  value in the list
     int save=*a;
     *a=*b;
     *b=save;

@@ -1,11 +1,4 @@
-#include <stdio.h>
-#define SIZE 50000
-
-int Readfile(int data[]);
-
-void InsertionSort(int list[], int size);
-
-void PrintList(int list[], int size);
+#include "lab08a.h"
 
 int main() {
     int data[SIZE],size;
@@ -14,7 +7,7 @@ int main() {
     return 0;
 }
 
-int Readfile(int data[]) {
+int Readfile(int data[]) {//read file list.txt and return list size
     FILE* fp= fopen("list.txt","r");
     int input,index=0;
     while ( fscanf(fp,"%d",&data[index++])!=EOF);
@@ -25,7 +18,7 @@ int Readfile(int data[]) {
 void InsertionSort(int list[], int size) {
     int index=0;//first node
     while(index<size){//until end of list
-        int insertValue=list[index],i=index;//storage which vale we wont to insert and i is the check lab in the list
+        int insertValue=list[index],i=index;//storage which vale we want to insert and i is the check lab in the list
         while ( i >0 && insertValue<=list[i-1]) {//if lab in the list and the before vale bigger than insert value
                 list[i]=list[i-1];//go to the next step to storage
                 i--;
