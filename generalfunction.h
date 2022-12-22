@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define SIZE 24
+#define SIZE 25
 void Swap(int *a,int *b){
     int save=*a;
     *a=*b;
