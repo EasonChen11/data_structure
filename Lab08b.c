@@ -28,8 +28,14 @@ int main() {
     printf("Processing Heap Sort:\n");
     int *heap=Heapify(data,SIZE);//let read list become heap
     printf("heapify:\n");PrintList(heap,SIZE);//print after heapify list
-    HeapSort(heap);
+    putchar('\n');HeapSort(heap);
     printf("Content of array:\n");PrintList(heap,SIZE);//print after heap sort list
+
+    printf("Processing Heap Sort to sort sorted list:\n");
+    int *heap2=Heapify(heap,SIZE);//let read list become heap
+    printf("heapify:\n");PrintList(heap,SIZE);//print after heapify list
+    putchar('\n');HeapSort(heap2);
+    printf("Content of array:\n");PrintList(heap2,SIZE);//print after heap sort list
 
 
     printf("\n\nBubble Sort part\n");
@@ -98,7 +104,7 @@ int* Heapify(int list[],int size){
         heap[i]= list[i];
         step+=BottomUp(heap,i+1);
     }
-    printf("Heapify took %d steps.\n\n",step);
+    printf("Heapify took %d steps.\n",step);
     return heap;
 }
 
@@ -126,7 +132,7 @@ int BubbleSortAddFrontCheck(int * list) {//n+(n-1)+(n-2)+...+1 -> O(n^2)
     int iterations=0,frontUnsortIndex=0;
     while(frontUnsortIndex<SIZE-1){
         int i;
-        for (i = 24; i > frontUnsortIndex; --i) {
+        for (i = SIZE-1; i > frontUnsortIndex; --i) {
             if(list[i]<list[i-1])Swap(&list[i], &list[i - 1]);
             iterations++;
         }
@@ -147,7 +153,7 @@ int BubbleSortAddStopCheck(int * list) {//if not any swap -> stop sort
     int iterations=0,frontUnsortIndex=0;
     while(frontUnsortIndex<SIZE-1){
         int i,haveSwap=0;
-        for (i = 24; i > frontUnsortIndex; --i) {
+        for (i = SIZE-1; i > frontUnsortIndex; --i) {
             if(list[i]<list[i-1]) { Swap(&list[i], &list[i - 1]);haveSwap=1; }
             iterations++;
         }
