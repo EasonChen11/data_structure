@@ -13,40 +13,46 @@ void RandomData();
 int *ReadFile();
 
 void HeapSort(int * heap);
-/***from select sort, we need through all the value which in the list
- * to pick up the smallest value and its index.
- * So we use heap to find the biggest value. And put it to the end of list.
- * then, bottom up the heap inorder to find the second bigger value.
- * again and again, then we will get the sorting list.
- ***/
 
 int BubbleSort(int * list);
 int BubbleSortAddFrontCheck(int * list);
 int BubbleSortAddStopCheck(int * list);
 
 int main() {
-    RandomData();
+    RandomData();//random number list put in Lab08b.txt
 
+//heap sort part
     printf("Heap Sort part\n");
-    int *data=ReadFile();
-    printf("Content of array:\n");PrintList(data,SIZE);
+    int *data=ReadFile();//read lab08b.txt
+    printf("Content of array:\n");PrintList(data,SIZE);//print origin contain
     printf("Processing Heap Sort:\n");
-    int *heap=Heapify(data,SIZE);
-    printf("heapify:\n");PrintList(heap,SIZE);
+    int *heap=Heapify(data,SIZE);//let read list become heap
+    printf("heapify:\n");PrintList(heap,SIZE);//print after heapify list
     HeapSort(heap);
-    printf("Content of array:\n");PrintList(heap,SIZE);
+    printf("Content of array:\n");PrintList(heap,SIZE);//print after heap sort list
 
 
     printf("\n\nBubble Sort part\n");
-    int *data1= ReadFile();
+    int *data1= ReadFile();//read lab08b.txt
     int *data2= ReadFile();
     int *data3= ReadFile();
-    printf("Bubble sort : %d iterations\n", BubbleSort(data1));
-    printf("Bubble sort improve 1 : %d iterations\n", BubbleSortAddFrontCheck(data2));
-    printf("Bubble sort improve 2: %d iterations\n", BubbleSortAddStopCheck(data3));
+    printf("sort unsorted list:\n");
+    printf("Bubble sort : %d iterations\n", BubbleSort(data1));//normal bubble sort
+    printf("Bubble sort improve 1 : %d iterations\n", BubbleSortAddFrontCheck(data2));//improve 1 bubble sort
+    printf("Bubble sort improve 2: %d iterations\n", BubbleSortAddStopCheck(data3));//improve 2 bubble sort
+    printf("\nsort sorted list:\n");
+    printf("Bubble sort : %d iterations\n", BubbleSort(data1));//normal bubble sort
+    printf("Bubble sort improve 1 : %d iterations\n", BubbleSortAddFrontCheck(data2));//improve 1 bubble sort
+    printf("Bubble sort improve 2: %d iterations\n", BubbleSortAddStopCheck(data3));//improve 2 bubble sort
     return 0;
 }
 void HeapSort(int * heap) {
+/***from select sort, we need through all the value which in the list
+ * to pick up the smallest value and its index.
+ * So we use heap to find the biggest value. And put it to the end of list.
+ * then, bottom up the heap inorder to find the second bigger value.
+ * again and again, then we will get the sorting list.
+ ***/
     int unSortSize=SIZE,step=0;
     while (unSortSize>0){
         Swap(&heap[--unSortSize],&heap[0]);
@@ -59,27 +65,27 @@ void HeapSort(int * heap) {
 }
 
 //heap function
-int BottomUp(int list[],int size){//(i-1)/2
+int BottomUp(int list[],int size){//(i-1)/2 let the least value go to its correct place
     int newValueIndex=size-1,step=0;
-    while(newValueIndex>0 && list[newValueIndex]>list[(newValueIndex-1)/2]) {
-        Swap(&list[newValueIndex], &list[(newValueIndex - 1) / 2]);
-        newValueIndex=(newValueIndex - 1) / 2;
+    while(newValueIndex>0 && list[newValueIndex]>list[(newValueIndex-1)/2]) {//check the new value whether bigger than its father and index is legal
+        Swap(&list[newValueIndex], &list[(newValueIndex - 1) / 2]);//go up
+        newValueIndex=(newValueIndex - 1) / 2;//update index
         step++;
     }
     return step;
 }
-int TopDown(int list[],int size){//i*2+1 i*2+2
+int TopDown(int list[],int size){//i*2+1 i*2+2 when we delete the biggest value, then we put the least value to the top.use top down reheap
     int newValueIndex=0,step=0;
-    while(newValueIndex*2+1<size){
+    while(newValueIndex*2+1<size){//check the node have child
         step++;
         int maxChildIndex;
-        if(newValueIndex*2+2<size) {
+        if(newValueIndex*2+2<size) {//find the biggest children
             if (list[newValueIndex * 2 + 1] > list[newValueIndex * 2 + 2])maxChildIndex = newValueIndex * 2 + 1;
             else maxChildIndex = newValueIndex * 2 + 2;
         }else maxChildIndex= newValueIndex * 2 + 1;
-        if(list[newValueIndex]<list[maxChildIndex]){
-            Swap(&list[newValueIndex],&list[maxChildIndex]);
-            newValueIndex=maxChildIndex;
+        if(list[newValueIndex]<list[maxChildIndex]){//if the node is the biggest value -> cancel top down, not swap node and continue top down
+            Swap(&list[newValueIndex],&list[maxChildIndex]);//swap to node
+            newValueIndex=maxChildIndex;//update index
         }
         else break;
     }
@@ -101,16 +107,21 @@ int BubbleSort(int * list) {//n+n+n+...+n (n items) -> O(n^2)
     PrintList(list,SIZE);
     int iterations=0;
     int i,j;
-    for (i = SIZE-1; i >0; --i) {
-        for (j = SIZE-1; j > 0; --j) {
+    for (i = SIZE-1; i >0; --i) {//find the smaller value
+        for (j = SIZE-1; j > 0; --j) {//put the smaller value to front of list
             if(list[j]<list[j-1])Swap(&list[j], &list[j - 1]);
-            iterations++;
+            iterations++;//storage step times
         }
     }
     PrintList(list,SIZE);
     return iterations;
 }
 int BubbleSortAddFrontCheck(int * list) {//n+(n-1)+(n-2)+...+1 -> O(n^2)
+/***
+ * every time, we will put the smallest value which is in the leftover list to front of list.
+ * do not check all the list every time.
+ * we only need check the not sort part, because the smallest value we have put it to  front of list.
+ * ***/
     PrintList(list,SIZE);
     int iterations=0,frontUnsortIndex=0;
     while(frontUnsortIndex<SIZE-1){
@@ -125,6 +136,13 @@ int BubbleSortAddFrontCheck(int * list) {//n+(n-1)+(n-2)+...+1 -> O(n^2)
     return iterations;
 }
 int BubbleSortAddStopCheck(int * list) {//if not any swap -> stop sort
+/***
+ * is similar BubbleSortAddFrontCheck function.
+ * in this function, add the check item.
+ * this item will storage whether have change in this travel time.
+ * if this time don't have change, it show that this list complete sorting.
+ * so, use this method sort the sorted list will spend less steps.
+ * ***/
     PrintList(list,SIZE);
     int iterations=0,frontUnsortIndex=0;
     while(frontUnsortIndex<SIZE-1){
@@ -141,7 +159,7 @@ int BubbleSortAddStopCheck(int * list) {//if not any swap -> stop sort
 }
 
 //general function
-void Swap(int *a,int *b){
+void Swap(int *a,int *b){//change two values which in the same list
     int save=*a;
     *a=*b;
     *b=save;
@@ -153,7 +171,7 @@ void PrintList(int list[],int size){
     }
     putchar('\n');
 }
-void RandomData(){
+void RandomData(){//create random number list and put in Lab08b.txt
     srand(time(NULL));
     FILE *fp= fopen("Lab08b.txt","w");
     for (int j = 0; j < SIZE; ++j) {
@@ -161,7 +179,7 @@ void RandomData(){
     }
     fclose(fp);
 }
-int *ReadFile(){
+int *ReadFile(){//read number list from Lab08b.txt
     int *data=(int*) malloc(sizeof (int)* SIZE);
     FILE *fp= fopen("Lab08b.txt","r");
     for (int i = 0; i < SIZE; ++i) {
