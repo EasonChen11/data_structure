@@ -3,5 +3,4 @@ project(data_structure C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(HeapSort HeapSort.c)
-add_executable(BubbleSort BubbleSort.c)
+add_executable(Lab08b Lab08b.c)
